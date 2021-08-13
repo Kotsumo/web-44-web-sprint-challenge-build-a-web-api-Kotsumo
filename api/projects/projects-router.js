@@ -1,12 +1,12 @@
 // Write your "projects" router here!
 const { json } = require('express');
 const express = require('express');
-const Post = require('./projects-model');
+const Project = require('./projects-model');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    Post.find()
+    Project.find()
     .then(found => {
         res.json(found)
     })
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id)
+        const post = await Project.findById(req.params.id)
         if(!post) {
             res.status(404).json({
                 message: "The post with the specific ID does not exist"
@@ -40,7 +40,6 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    
 })
 
 router.put('/:id', (req, res) => {
