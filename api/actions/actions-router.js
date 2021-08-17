@@ -42,4 +42,20 @@ router.put("/:id", validateAction, validateActionId, (req, res, next) => {
     .catch(next);
 });
 
+router.delete("/:id", validateActionId, (req, res, next) => {
+    Actions.remove(req.params.id)
+    .then(() => {
+        res.status(200).json("Action Deleted");
+    })
+    .catch(next);
+});
+
+router.use((err, req, res, next) /* eslint-disable-line */ => {
+    res.status(500).json({
+      message: err.message,
+      stack: err.stack,
+      custom: "Something is off...",
+    });
+  });
+
 module.exports = router;
