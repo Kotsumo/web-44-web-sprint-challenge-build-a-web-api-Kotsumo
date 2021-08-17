@@ -1,57 +1,63 @@
 // Write your "projects" router here!
-const { json } = require('express');
+//const { json } = require('express');
 const express = require('express');
-const Project = require('./projects-model');
+const Projects = require('./projects-model');
+
+const {
+    validateProjectId,
+    validateProject,
+} = require("../middleware/middleware")
+
+
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    Project.find()
-    .then(found => {
-        res.json(found)
+router.get('/', (req, res, next) => {
+    Projects.get()
+    .then((projects) => {
+        res.status(200).json(projects);
     })
-    .catch(err => {
-        res.status(500).json({
-            message: "The posts information could not be retrieved",
-            err: err.message,
-            stack: err.stack,
-        })
-    })
+    .catch(next);
 });
 
-router.get('/:id', async (req, res) => {
-    try {
-        const post = await Project.findById(req.params.id)
-        if(!post) {
-            res.status(404).json({
-                message: "The post with the specific ID does not exist"
-            })
-        } else {
-            res.json(post)
-        }
-    }
-    catch (err) {
-        res.status(500).json({
-            message: "The post information could not be retrieved",
-            err: err.message,
-            stack: err.stack,
-        })
-    }
+router.get('/:id', validateProjectId, (req, res, next) => {
+    Projects.get(req.params.id)
+    .then((project) => {
+        res.status(200).json(project);
+    })
+    .catch(next);
 });
 
-router.post('/', (req, res) => {
-})
+router.post('/', validateProject, (req, res, next) => {
+    Projects.insert(req.body)
+    .then(() => {
+        res.status(201).json(req.body);
+    })
+    .catch(next);
+});
 
-router.put('/:id', (req, res) => {
-    
-})
+router.put('/:id', validateProjectId, (req, res, next) => {
+    Projects.update(req.params.id, req.body)
+    .then((project) => {
+        res.status(200).json(project);
+    })
+    .catch(next);
+});
 
-router.delete('/:id', async (req, res) => {
-    
-})
+router.delete('/:id', validateProjectId, (req, res, next) => {
+    Projects.remove(req.params.id)
+    .then(() => {
+        res.status(200).json("Deleted Successfully");
+    })    
+    .catch(next);
+});
 
-router.get('/:id/actions', async (req, res) => {
-    
-})
+router.get('/:id/actions', validateProjectId, (req, res, next) => {
+    Projects.getProjectActions(req.params.id)
+    .then((actions) => {
+        res.status(200).json(actions);
+    })
+    .catch(next);
+});
 
 module.exports = router;
